@@ -1,3 +1,5 @@
+import scala.util.Properties
+import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContextExecutor
 import akka.actor.ActorSystem
 import akka.event.{ LoggingAdapter, Logging }
@@ -9,6 +11,14 @@ import java.util.Calendar
 import akka.http.Http
 import akka.http.server.Directives._
 import akka.http.marshalling.ToResponseMarshallable
+import akka.http.unmarshalling.Unmarshal
+import geometry._
+import feature._
+import io.shapefile.ShapefileReader
+import io.geojson.GeoJsonReader
+import io.geojson.FeatureJsonProtocol._
+import spray.json._
+import java.nio.file.{ Paths, Files, FileSystems }
 
 case class Status(status: String, time: String)
 
@@ -34,7 +44,24 @@ trait Service extends JsonProtocol {
           }
         }
       }
-    }
+    } ~
+      path("features") {
+        parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
+          lazy val shpDir = Properties.envOrElse("SHP_DIR", "src/main/resources")
+          lazy val path = FileSystems.getDefault().getPath(shpDir)
+          lazy val geoJsonFile = Files.newDirectoryStream(path, "*.geojson").iterator.toList.head.toAbsolutePath.toString
+          lazy val geoJson = GeoJsonReader(geoJsonFile)
+          val fc = geoJson.fc
+          val p = Point(lon, lat)
+          val t = fc.pointInPoly(p).getOrElse(Nil).toList
+          val result = FeatureCollection(t)
+          compressResponseIfRequested() {
+            complete {
+              ToResponseMarshallable(result)
+            }
+          }
+        }
+      }
   }
 
 }

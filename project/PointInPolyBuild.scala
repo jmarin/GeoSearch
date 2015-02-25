@@ -27,7 +27,7 @@ object PointInPolyBuild extends Build {
   import Dependencies._
   import BuildSettings._
 
-  val buildDeps = Seq(akkaActor, akkaStreams, akkaHttpCore, akkaHttp, akkaHttpJson, akkaHttpTestkit, scaleGeoJson)
+  val buildDeps = Seq(akkaActor, akkaStreams, akkaHttpCore, akkaHttp, akkaHttpJson, akkaHttpTestkit, scaleGeoJson, scaleShapefile)
 
   val test = Seq(scalaTest, scalaCheck)
 

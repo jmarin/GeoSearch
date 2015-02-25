@@ -19,5 +19,6 @@ object Dependencies {
   val scalaCheck      = "org.scalacheck"    %% "scalacheck"                         % Version.scalaCheck  % "test"
 
   val scaleGeoJson    = "com.github.jmarin" %% "scale-geojson"                      % Version.scale
+  val scaleShapefile  = "com.github.jmarin" %% "scale-shapefile"                    % Version.scale
 
 }
