@@ -18,8 +18,6 @@ object Dependencies {
   val scalaTest       = "org.scalatest"     %% "scalatest"                          % Version.scalaTest   % "test"
   val scalaCheck      = "org.scalacheck"    %% "scalacheck"                         % Version.scalaCheck  % "test"
 
-  val jts             = "com.vividsolutions" % "jts"                                % Version.jts
-
   val scaleGeoJson    = "com.github.jmarin" %% "scale-geojson"                      % Version.scale
 
 }

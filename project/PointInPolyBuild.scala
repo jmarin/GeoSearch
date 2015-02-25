@@ -22,15 +22,21 @@ object BuildSettings {
 }
 
 
-object PointInPolyBuilds extends Build {
+object PointInPolyBuild extends Build {
   
   import Dependencies._
   import BuildSettings._
 
+  val buildDeps = Seq(akkaActor, akkaStreams, akkaHttpCore, akkaHttp, akkaHttpJson, akkaHttpTestkit, scaleGeoJson)
+
+  val test = Seq(scalaTest, scalaCheck)
+
+  val deps = buildDeps ++ test
+
   lazy val pointinpoly = Project(
     "point-in-poly",
     file("."),
-    settings = buildSettings
+    settings = buildSettings ++ Seq(libraryDependencies ++= deps)
   )
 
 }
