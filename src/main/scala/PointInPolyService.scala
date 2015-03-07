@@ -34,6 +34,12 @@ trait Service extends JsonProtocol {
   def config: Config
   val logger: LoggingAdapter
 
+  lazy val shpDir = Properties.envOrElse("SHP_DIR", "src/main/resources")
+  lazy val shpPath = FileSystems.getDefault().getPath(shpDir)
+  lazy val geoJsonFile = Files.newDirectoryStream(shpPath, "*.geojson").iterator.toList.head.toAbsolutePath.toString
+  lazy val geoJson = GeoJsonReader(geoJsonFile)
+  val fc = geoJson.fc
+
   val routes = {
     path("status") {
       get {
@@ -45,16 +51,22 @@ trait Service extends JsonProtocol {
         }
       }
     } ~
+      path("census" / Segment) { geography =>
+        parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
+          complete {
+            ToResponseMarshallable(lat + ", " + lon)
+          }
+        }
+
+      } ~
       path("features") {
         parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
-          lazy val shpDir = Properties.envOrElse("SHP_DIR", "src/main/resources")
-          lazy val path = FileSystems.getDefault().getPath(shpDir)
-          lazy val geoJsonFile = Files.newDirectoryStream(path, "*.geojson").iterator.toList.head.toAbsolutePath.toString
-          lazy val geoJson = GeoJsonReader(geoJsonFile)
-          val fc = geoJson.fc
           val p = Point(lon, lat)
           val t = fc.pointInPoly(p).getOrElse(Nil).toList
-          val result = FeatureCollection(t)
+          val result = FeatureCollection(t).features.map { f =>
+            f.get("GEOID10").getOrElse("")
+          }.head.toString
+
           compressResponseIfRequested() {
             complete {
               ToResponseMarshallable(result)

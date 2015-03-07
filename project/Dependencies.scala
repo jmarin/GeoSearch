@@ -18,6 +18,8 @@ object Dependencies {
   val scalaTest       = "org.scalatest"     %% "scalatest"                          % Version.scalaTest   % "test"
   val scalaCheck      = "org.scalacheck"    %% "scalacheck"                         % Version.scalaCheck  % "test"
 
+  val sqliteJdbc      = "org.xerial"         % "sqlite-jdbc"                        % Version.sqliteJdbc
+
   val scaleGeoJson    = "com.github.jmarin" %% "scale-geojson"                      % Version.scale
   val scaleShapefile  = "com.github.jmarin" %% "scale-shapefile"                    % Version.scale
 
