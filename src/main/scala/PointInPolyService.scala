@@ -1,24 +1,22 @@
-import scala.util.Properties
-import scala.collection.JavaConversions._
-import scala.concurrent.ExecutionContextExecutor
+package geosearch
+
+import java.nio.file.{ FileSystems, Files }
+import java.util.Calendar
 import akka.actor.ActorSystem
-import akka.event.{ LoggingAdapter, Logging }
+import akka.event.{ Logging, LoggingAdapter }
+import akka.http.Http
+import akka.http.marshallers.sprayjson.SprayJsonSupport._
+import akka.http.marshalling.ToResponseMarshallable
+import akka.http.server.Directives._
 import akka.stream.ActorFlowMaterializer
 import com.typesafe.config.{ Config, ConfigFactory }
-import spray.json.DefaultJsonProtocol
-import akka.http.marshallers.sprayjson.SprayJsonSupport._
-import java.util.Calendar
-import akka.http.Http
-import akka.http.server.Directives._
-import akka.http.marshalling.ToResponseMarshallable
-import akka.http.unmarshalling.Unmarshal
-import geometry._
 import feature._
-import io.shapefile.ShapefileReader
+import geometry._
 import io.geojson.GeoJsonReader
-import io.geojson.FeatureJsonProtocol._
-import spray.json._
-import java.nio.file.{ Paths, Files, FileSystems }
+import spray.json.DefaultJsonProtocol
+import scala.collection.JavaConversions._
+import scala.concurrent.ExecutionContextExecutor
+import scala.util.Properties
 
 case class Status(status: String, time: String)
 
@@ -51,14 +49,6 @@ trait Service extends JsonProtocol {
         }
       }
     } ~
-      path("census" / Segment) { geography =>
-        parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
-          complete {
-            ToResponseMarshallable(lat + ", " + lon)
-          }
-        }
-
-      } ~
       path("features") {
         parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
           val p = Point(lon, lat)
