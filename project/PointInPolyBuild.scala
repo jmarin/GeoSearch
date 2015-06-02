@@ -36,7 +36,10 @@ object PointInPolyBuild extends Build {
   lazy val pointinpoly = Project(
     "point-in-poly",
     file("."),
-    settings = buildSettings ++ Seq(libraryDependencies ++= deps)
+    settings = buildSettings ++ Seq(
+      resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+      libraryDependencies ++= deps
+    )
   )
 
 }
