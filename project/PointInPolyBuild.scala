@@ -7,7 +7,7 @@ object BuildSettings {
 
   val buildOrganization = "cfpb"
   val buildVersion      = "1.0.0"
-  val buildScalaVersion = "2.11.5"
+  val buildScalaVersion = "2.11.6"
 
   val buildSettings = Defaults.coreDefaultSettings ++
     scalariformSettings ++
