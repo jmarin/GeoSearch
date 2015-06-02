@@ -52,7 +52,8 @@ trait Service extends GeoSearchJsonProtocol {
         parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
           val p = Point(lon, lat)
           val t = fc.pointInPoly(p).getOrElse(Nil).toList
-          val geoid10 = FeatureCollection(t).features.map(f => f.get("GEOID10").getOrElse("")).head.toString
+          val list = FeatureCollection(t).features.map(f => f.get("GEOID10").getOrElse(""))
+          val geoid10 = if (list.size > 0) list.head.toString else ""
           val result = PointInPolyResult(geoid10)
 
           encodeResponseWith(NoCoding, Gzip, Deflate) {

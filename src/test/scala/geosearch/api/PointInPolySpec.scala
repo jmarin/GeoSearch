@@ -34,6 +34,16 @@ class PointInPolySpec extends FlatSpec with MustMatchers with ScalatestRouteTest
   "A point in polygon geosearch" must "return features that overlap" in {
     Get("/features?latitude=39.5&longitude=-77.2") ~> routes ~> check {
       status mustBe OK
+      val resp = responseAs[geosearch.model.PointInPolyResult]
+      resp.GEOID10 mustBe "24"
+    }
+  }
+
+  it must "return empty result where there is no overlap" in {
+    Get("/features?latitude=0&longitude=0") ~> routes ~> check {
+      status mustBe OK
+      val resp = responseAs[geosearch.model.PointInPolyResult]
+      resp.GEOID10 mustBe ""
     }
   }
 
