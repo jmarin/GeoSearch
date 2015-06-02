@@ -13,6 +13,7 @@ import com.typesafe.config.{ Config, ConfigFactory }
 import feature._
 import geometry._
 import io.geojson.GeoJsonReader
+import model.PointInPolyResult
 import spray.json.DefaultJsonProtocol
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContextExecutor
@@ -22,6 +23,7 @@ case class Status(status: String, time: String)
 
 trait JsonProtocol extends DefaultJsonProtocol {
   implicit val statusFormat = jsonFormat2(Status.apply)
+  implicit val resultFormat = jsonFormat1(PointInPolyResult.apply)
 }
 
 trait Service extends JsonProtocol {
@@ -53,9 +55,8 @@ trait Service extends JsonProtocol {
         parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
           val p = Point(lon, lat)
           val t = fc.pointInPoly(p).getOrElse(Nil).toList
-          val result = FeatureCollection(t).features.map { f =>
-            f.get("GEOID10").getOrElse("")
-          }.head.toString
+          val geoid10 = FeatureCollection(t).features.map(f => f.get("GEOID10").getOrElse("")).head.toString
+          val result = PointInPolyResult(geoid10)
 
           compressResponseIfRequested() {
             complete {
