@@ -1,27 +1,25 @@
 package geosearch.api
 
 import java.net.InetAddress
-import java.nio.file.{ Files, FileSystems }
+import java.nio.file.{ FileSystems, Files }
 import java.time.Instant
-import java.util.Calendar
-import scala.collection.JavaConversions._
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.coding.{ Deflate, Gzip, NoCoding }
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorFlowMaterializer
 import com.typesafe.config.Config
-import feature.FeatureCollection
 import geometry.Point
-import geosearch.model.{ PointInPolyResult, Status }
-import geosearch.protocol.GeoSearchJsonProtocol
+import geosearch.model.{ GeoSearchResult, Status }
+import geosearch.protocol.GeoSearchJsonProtocol._
 import io.geojson.GeoJsonReader
+import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContextExecutor
 import scala.util.Properties
 
-trait Service extends GeoSearchJsonProtocol {
+trait Service {
   implicit val system: ActorSystem
   implicit def executor: ExecutionContextExecutor
   implicit val materializer: ActorFlowMaterializer
@@ -52,9 +50,8 @@ trait Service extends GeoSearchJsonProtocol {
         parameters('latitude.as[Double], 'longitude.as[Double]) { (lat, lon) =>
           val p = Point(lon, lat)
           val t = fc.pointInPoly(p).getOrElse(Nil).toList
-          val list = FeatureCollection(t).features.map(f => f.get("GEOID10").getOrElse(""))
-          val geoid10 = if (list.size > 0) list.head.toString else ""
-          val result = PointInPolyResult(geoid10)
+          val contained = t.nonEmpty
+          val result = GeoSearchResult(contained)
 
           encodeResponseWith(NoCoding, Gzip, Deflate) {
             complete {

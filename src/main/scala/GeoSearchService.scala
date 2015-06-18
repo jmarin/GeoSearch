@@ -7,7 +7,7 @@ import akka.stream.ActorFlowMaterializer
 import com.typesafe.config.ConfigFactory
 import geosearch.api.Service
 
-object PointInPolyService extends App with Service {
+object GeoSearchService extends App with Service {
   override implicit val system = ActorSystem()
   override implicit val executor = system.dispatcher
   override implicit val materializer = ActorFlowMaterializer()
