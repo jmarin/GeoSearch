@@ -13,13 +13,13 @@ import akka.stream.ActorFlowMaterializer
 import com.typesafe.config.Config
 import geometry.Point
 import geosearch.model.{ GeoSearchResult, Status }
-import geosearch.protocol.GeoSearchJsonProtocol._
+import geosearch.protocol.GeoSearchJsonProtocol
 import io.geojson.GeoJsonReader
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContextExecutor
 import scala.util.Properties
 
-trait Service {
+trait Service extends GeoSearchJsonProtocol {
   implicit val system: ActorSystem
   implicit def executor: ExecutionContextExecutor
   implicit val materializer: ActorFlowMaterializer
