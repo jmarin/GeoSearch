@@ -34,7 +34,7 @@ object GeoSearchBuild extends Build {
   val deps = buildDeps ++ test
 
   lazy val geosearch = Project(
-    "point-in-poly",
+   "GeoSearch",
     file("."),
     settings = buildSettings ++ Seq(
       resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
